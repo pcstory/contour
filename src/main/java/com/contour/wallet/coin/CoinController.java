@@ -34,7 +34,7 @@ public class CoinController {
 	public List<CoinDto> getAllCoins() {
 		return getAllCoinsDto();
 	}
-	
+
 	private List<CoinDto> getAllCoinsDto() {
 		List<Coin> coins = service.getAllCoins();
 		log.debug(coins.size() + "");
@@ -45,7 +45,7 @@ public class CoinController {
 	public List<CoinDto> pay(@RequestParam String coins) throws Exception {
 		String[] coinArr = coins.split(",");
 		List<Integer> listArr = new ArrayList<>();
-	
+
 		for (String coin : coinArr)
 			listArr.add(Integer.parseInt(coin));
 
@@ -53,4 +53,5 @@ public class CoinController {
 		return coinList.stream().map(helper::convertDto).collect(Collectors.toList());
 	}
 
+	
 }

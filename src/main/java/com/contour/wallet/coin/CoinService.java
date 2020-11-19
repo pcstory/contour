@@ -3,6 +3,7 @@ package com.contour.wallet.coin;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,19 @@ public class CoinService {
 	}
 
 	public List<Coin> pay(List<Integer> coins) throws Exception {
-		exactMatch(coins);
+		int sumInDB = coinRepo.getSum();
+		Integer sum = coins.stream().reduce(0, Integer::sum);
+		if (sumInDB < sum) {
+			throw new Exception("not sufficient sum");
+		}
+		
+		// Optional - exact match - reduce db operation (Optimization) 
+		List<Coin> exactMatchCoins = coinRepo.findByValueIn(coins);
+		List<Integer> deletedCoins = exactMatchCoins.stream().map(s -> s.getValue()).collect(Collectors.toList());
+		coins.removeAll(deletedCoins);
+		coinRepo.deleteAll(exactMatchCoins);
+		
+		// Solve remaining
 		if (coins.size() > 0) {
 			solveRemaining(coins);
 		}
@@ -37,42 +50,26 @@ public class CoinService {
 	}
 
 	private void solveRemaining(List<Integer> coins) throws Exception {
+		List<Coin> toBeDelete = new ArrayList<>();
 		Integer sum = coins.stream().reduce(0, Integer::sum);
 		Iterator<Coin> ite = coinRepo.findAll().iterator();
 		int payTotal = 0;
-		boolean paidAll = false;
 		while (ite.hasNext()) {
 			Coin coin = ite.next();
 			payTotal += coin.getValue();
 			ite.remove();
-			coinRepo.delete(coin);
-			if (payTotal == sum) {
+			toBeDelete.add(coin);
+			if (payTotal >= sum) {
 				log.debug("paid All");
+				if (payTotal - sum > 0) {
+					log.debug("save remainint");
+					Coin remain = new Coin(payTotal - sum);
+					coinRepo.save(remain);
+				}
 				break;
 			}
-			if (payTotal > sum) {
-				Coin remain = new Coin(payTotal - sum);
-				coinRepo.save(remain);
-				paidAll = true;
-				break;
-			}
 		}
-		if (!paidAll) {
-			throw new Exception("Not sufficient funds");
-		}
-	}
-
-	private void exactMatch(List<Integer> coins) {
-		Iterator<Integer> ite = coins.iterator();
-		while (ite.hasNext()) {
-			int coin = ite.next();
-			log.debug("find coin " + coin);
-			Coin dbCoin = coinRepo.findFirstByValue(coin);
-			if (dbCoin != null) {
-				coinRepo.delete(dbCoin);
-				ite.remove();
-			}
-		}
+		coinRepo.deleteAll(toBeDelete);
 	}
 
 }
