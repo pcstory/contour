@@ -1,4 +1,4 @@
-package com.contour.wallet.coin;
+package com.contour.wallet.coin.controller;
 
 public class CoinDto {
 
@@ -12,8 +12,4 @@ public class CoinDto {
 		this.value = value;
 	}
 
-	public String toString() {
-		return (value != 0 ? Integer.toString(value) : " ");
-	}
-	
 }

@@ -1,4 +1,4 @@
-package com.contour.wallet.coin;
+package com.contour.wallet.coin.service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,8 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.contour.wallet.coin.dao.Coin;
+import com.contour.wallet.coin.dao.CoinRepository;
+import com.contour.wallet.coin.exception.BizException;
+import com.contour.wallet.coin.exception.CoinErrorEnum;
+import com.contour.wallet.coin.util.CoinHelper;
+
 @Service
-public class CoinService {
+public class CoinService implements ICoinService{
 
 	@Autowired
 	private CoinRepository coinRepo;
@@ -21,38 +27,29 @@ public class CoinService {
 
 	private static final Logger log = LoggerFactory.getLogger(CoinService.class);
 
+	@Override
 	public List<Coin> getAllCoins() {
 		return coinRepo.findByValueGreaterThan(0);
 	}
 
+	@Override
 	public List<Coin> pay(List<Integer> coins) throws Exception {
-		int sumInDB = coinRepo.getSum();
+		Integer sumObj = coinRepo.getSum();
+		int sumInDB =  sumObj == null ? 0: sumObj.intValue();
 		Integer sum = coins.stream().reduce(0, Integer::sum);
 		if (sumInDB < sum) {
-			throw new BizException("not sufficient sum");
+			throw new BizException(CoinErrorEnum.INSUFFICIENT_FUNDS);
 		}
-
-		// Optional - exact match - reduce db operation (Optimization)
-		List<Coin> exactMatchCoins = coinRepo.findByValueIn(coins);
-		List<Integer> deletedCoins = exactMatchCoins.stream().map(s -> s.getValue()).collect(Collectors.toList());
-		coins.removeAll(deletedCoins);
-		coinRepo.deleteAll(exactMatchCoins);
-
-		// Solve remaining
-		if (coins.size() > 0) {
-			solveRemaining(coins);
-		}
+		processPay(coins);
 		log.debug(coinRepo.findAll().toString());
 		return findAllInList();
 	}
 
 	private List<Coin> findAllInList() {
-		List<Coin> coinList = new ArrayList<>();
-		coinRepo.findAll().forEach(coinList::add);
-		return coinList;
+		return coinRepo.findByValueGreaterThan(0);
 	}
 
-	private void solveRemaining(List<Integer> coins) throws Exception {
+	private void processPay(List<Integer> coins) throws Exception {
 		List<Coin> toBeDelete = new ArrayList<>();
 		Integer sum = coins.stream().reduce(0, Integer::sum);
 		Iterator<Coin> ite = coinRepo.findAll().iterator();
@@ -75,6 +72,7 @@ public class CoinService {
 		coinRepo.deleteAll(toBeDelete);
 	}
 
+	@Override
 	public List<Coin> put(List<Integer> listArr) {
 		List<Coin> coins = listArr.stream().map(helper::getNewCoin).collect(Collectors.toList());
 		coinRepo.saveAll(coins);

@@ -1,4 +1,4 @@
-package com.contour.wallet.coin;
+package com.contour.wallet.coin.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

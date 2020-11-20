@@ -1,4 +1,4 @@
-package com.contour.wallet.coin;
+package com.contour.wallet.coin.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.contour.wallet.coin.dao.Coin;
+import com.contour.wallet.coin.service.CoinService;
+import com.contour.wallet.coin.util.CoinHelper;
 
 @RestController
 @RequestMapping("wallet")

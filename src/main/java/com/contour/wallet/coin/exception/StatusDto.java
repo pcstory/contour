@@ -1,6 +1,6 @@
-package com.contour.wallet.coin;
+package com.contour.wallet.coin.exception;
 
-public class Status {
+public class StatusDto {
 
 	private String status;
 
