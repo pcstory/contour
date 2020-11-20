@@ -16,6 +16,9 @@ public class CoinService {
 	@Autowired
 	private CoinRepository coinRepo;
 
+	@Autowired
+	private CoinHelper helper;
+
 	private static final Logger log = LoggerFactory.getLogger(CoinService.class);
 
 	public List<Coin> getAllCoins() {
@@ -26,15 +29,15 @@ public class CoinService {
 		int sumInDB = coinRepo.getSum();
 		Integer sum = coins.stream().reduce(0, Integer::sum);
 		if (sumInDB < sum) {
-			throw new Exception("not sufficient sum");
+			throw new InsufficientfundException("not sufficient sum");
 		}
-		
-		// Optional - exact match - reduce db operation (Optimization) 
+
+		// Optional - exact match - reduce db operation (Optimization)
 		List<Coin> exactMatchCoins = coinRepo.findByValueIn(coins);
 		List<Integer> deletedCoins = exactMatchCoins.stream().map(s -> s.getValue()).collect(Collectors.toList());
 		coins.removeAll(deletedCoins);
 		coinRepo.deleteAll(exactMatchCoins);
-		
+
 		// Solve remaining
 		if (coins.size() > 0) {
 			solveRemaining(coins);
@@ -70,6 +73,12 @@ public class CoinService {
 			}
 		}
 		coinRepo.deleteAll(toBeDelete);
+	}
+
+	public List<Coin> put(List<Integer> listArr) {
+		List<Coin> coins = listArr.stream().map(helper::getNewCoin).collect(Collectors.toList());
+		coinRepo.saveAll(coins);
+		return findAllInList();
 	}
 
 }

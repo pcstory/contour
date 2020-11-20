@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ControllerHelper {
+public class CoinHelper {
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -13,6 +13,10 @@ public class ControllerHelper {
 	public CoinDto convertDto(Coin coin) {
 	    CoinDto coinDto = modelMapper.map(coin, CoinDto.class);
 	    return coinDto;
+	}
+	
+	public Coin getNewCoin(int value) {
+	    return new Coin(value);
 	}
 	
 }

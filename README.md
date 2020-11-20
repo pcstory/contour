@@ -1,9 +1,12 @@
-# Getting Started
+# Wallet
 
-### Reference Documentation
-For further reference, please consider the following sections:
+```sh
+# To pay 
+http://localhost:8080/wallet/pay?coins=1,2
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.4.0/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.4.0/maven-plugin/reference/html/#build-image)
+# To put
+http://localhost:8080/wallet/put?coins=1,2,1,3
 
+# To check wallet value
+http://localhost:8080/wallet/
+```

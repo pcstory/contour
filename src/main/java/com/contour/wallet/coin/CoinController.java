@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CoinController {
 
 	@Autowired
-	private ControllerHelper helper;
+	private CoinHelper helper;
 
 	@Autowired
 	private CoinService service;
@@ -30,7 +30,7 @@ public class CoinController {
 		return testMsg;
 	}
 
-	@GetMapping("/all")
+	@GetMapping("/")
 	public List<CoinDto> getAllCoins() {
 		return getAllCoinsDto();
 	}
@@ -52,6 +52,19 @@ public class CoinController {
 		List<Coin> coinList = service.pay(listArr);
 		return coinList.stream().map(helper::convertDto).collect(Collectors.toList());
 	}
+	
+	@GetMapping("/put")
+	public List<CoinDto> put(@RequestParam String coins) throws Exception {
+		String[] coinArr = coins.split(",");
+		List<Integer> listArr = new ArrayList<>();
+
+		for (String coin : coinArr)
+			listArr.add(Integer.parseInt(coin));
+
+		List<Coin> coinList = service.put(listArr);
+		return coinList.stream().map(helper::convertDto).collect(Collectors.toList());
+	}
+	
 
 	
 }

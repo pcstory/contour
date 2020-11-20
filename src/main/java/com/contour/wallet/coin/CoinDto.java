@@ -1,8 +1,9 @@
 package com.contour.wallet.coin;
 
 public class CoinDto {
-	private int value;
 
+	private int value;
+	
 	public int getValue() {
 		return value;
 	}
@@ -10,5 +11,5 @@ public class CoinDto {
 	public void setValue(int value) {
 		this.value = value;
 	}
-	
+
 }
