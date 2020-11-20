@@ -2,14 +2,14 @@ package com.contour.wallet.coin;
 
 public class Status {
 
-	private String value;
+	private String status;
 
 	public String getValue() {
-		return value;
+		return status;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setStatus(String value) {
+		this.status = value;
 	}
 	
 	

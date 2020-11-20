@@ -29,7 +29,7 @@ public class CoinService {
 		int sumInDB = coinRepo.getSum();
 		Integer sum = coins.stream().reduce(0, Integer::sum);
 		if (sumInDB < sum) {
-			throw new InsufficientfundException("not sufficient sum");
+			throw new BizException("not sufficient sum");
 		}
 
 		// Optional - exact match - reduce db operation (Optimization)

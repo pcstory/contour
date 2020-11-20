@@ -12,4 +12,8 @@ public class CoinDto {
 		this.value = value;
 	}
 
+	public String toString() {
+		return (value != 0 ? Integer.toString(value) : " ");
+	}
+	
 }

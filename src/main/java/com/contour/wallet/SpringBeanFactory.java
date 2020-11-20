@@ -1,4 +1,4 @@
-package com.contour.wallet.coin;
+package com.contour.wallet;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,5 @@
 package com.contour.wallet.coin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,25 +42,13 @@ public class CoinController {
 
 	@GetMapping("/pay")
 	public List<CoinDto> pay(@RequestParam String coins) throws Exception {
-		String[] coinArr = coins.split(",");
-		List<Integer> listArr = new ArrayList<>();
-
-		for (String coin : coinArr)
-			listArr.add(Integer.parseInt(coin));
-
-		List<Coin> coinList = service.pay(listArr);
+		List<Coin> coinList = service.pay(helper.parseInput(coins));
 		return coinList.stream().map(helper::convertDto).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/put")
 	public List<CoinDto> put(@RequestParam String coins) throws Exception {
-		String[] coinArr = coins.split(",");
-		List<Integer> listArr = new ArrayList<>();
-
-		for (String coin : coinArr)
-			listArr.add(Integer.parseInt(coin));
-
-		List<Coin> coinList = service.put(listArr);
+		List<Coin> coinList = service.put(helper.parseInput(coins));
 		return coinList.stream().map(helper::convertDto).collect(Collectors.toList());
 	}
 	
